@@ -298,10 +298,7 @@ footer { text-align:center; color:#9AA68F; font-size:.78rem; padding:24px 0 36px
 
 /* ===== Impressão (relatório / requisição) ===== */
 #relatorio { display:none; }
-@media print {
-  @page { size:A4; margin:13mm 11mm; }
-  body.imprimindo > *:not(#relatorio) { display:none !important; }
-  body.imprimindo #relatorio { display:block; }
+/* ===== Estilos dos documentos PDF (relatório e requisição) ===== */
   #relatorio { font-size:10pt; color:#1c2418; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   #relatorio table { display:table; width:100%; }
   #relatorio thead { display:table-header-group; }
@@ -352,9 +349,85 @@ footer { text-align:center; color:#9AA68F; font-size:.78rem; padding:24px 0 36px
   .req-assin .campo { flex:1; text-align:center; font-size:9pt; }
   .req-assin .campo .linha-ass { border-bottom:.6pt solid #333; height:9mm; margin-bottom:1.5mm; }
   .req-assin .campo span { color:#6F7E63; font-size:7.8pt; }
+  /* requisição em folha única: compactação progressiva */
+  .doc-req td.c-sis { font-size:.92em; }
+  .req-c1 table { font-size:7.6pt; }
+  .req-c1 #relatorio td, .req-c1 td, .req-c1 th { padding:2px 1.5px; }
+  .req-c2 table { font-size:6.9pt; }
+  .req-c2 td, .req-c2 th { padding:1.5px 1px; }
+  .req-c2 .rel-topo, .req-c3 .rel-topo { padding:3mm 5mm; }
+  .req-c2 .rel-logo, .req-c3 .rel-logo { height:10mm; }
+  .req-c2 .req-meta div, .req-c3 .req-meta div { padding:1.2mm 2.5mm; font-size:8.5pt; }
+  .req-c2 .req-obs .linha { height:5mm; }
+  .req-c2 .req-assin .campos { padding:6mm 6mm 3mm; }
+  .req-c2 .pt, .req-c3 .pt { width:9px; height:9px; }
+  .req-c3 table { font-size:6.2pt; }
+  .req-c3 td, .req-c3 th { padding:1px; }
+  .req-c3 .req-obs { display:none; }
+  .req-c3 .req-assin .campos { padding:5mm 6mm 2.5mm; }
+  .req-c3 .req-assin .campo .linha-ass { height:7mm; }
+  .req-c3 .rel-fio { margin:1.5mm 0 2.5mm; }
   .rel-rodape { margin-top:14px; font-size:8.5pt; color:#6F7E63; text-align:center; }
+
+/* ===== Catálogo completo em PDF (capa, sumário e blocos por sistema) ===== */
+.cat-capa { height:270mm; break-after:page; border-radius:4mm; position:relative;
+  overflow:hidden; color:#fff; display:flex; flex-direction:column; padding:16mm 15mm;
+  background:linear-gradient(160deg,var(--verde-suave),var(--verde) 45%,var(--verde-escuro)); }
+.cat-capa::after { content:''; position:absolute; inset:0; pointer-events:none;
+  background:repeating-linear-gradient(115deg, rgba(228,216,174,.12) 0 2mm, transparent 2mm 16mm); }
+.cat-capa .logos { display:flex; align-items:center; }
+.cat-capa .logos img { height:17mm; filter:drop-shadow(0 0.5mm 1mm rgba(0,0,0,.4)); }
+.cat-capa .logos img.dir { margin-left:auto; }
+.cat-capa .miolo { margin:auto 0; }
+.cat-capa .rotulo { font-size:11pt; letter-spacing:2.5pt; opacity:.9; }
+.cat-capa h1 { margin:2mm 0 1mm; font-size:31pt; line-height:1.08; letter-spacing:.5pt; }
+.cat-capa h2 { margin:0; font-size:16pt; font-weight:normal; opacity:.95; }
+.cat-capa .fio { height:1.6mm; width:58mm; background:var(--palha); border-radius:1mm; margin:6mm 0; }
+.cat-capa .info { font-size:10.5pt; opacity:.95; }
+.cat-capa .dots { margin-top:auto; display:flex; gap:4mm; align-items:center; flex-wrap:wrap;
+  background:rgba(255,255,255,.13); border-radius:3mm; padding:4mm 5mm; font-size:8.5pt; }
+.cat-capa .dots .pt { width:7mm; height:7mm; border-color:rgba(255,255,255,.55); }
+.cat-capa .rodape-capa { margin-top:5mm; font-size:8.5pt; opacity:.85; }
+.cat-sumario { break-after:page; }
+.cat-sumario h2 { color:var(--verde-escuro); border-bottom:1.2mm solid var(--verde);
+  padding-bottom:2mm; font-size:16pt; margin:0 0 4mm; }
+.sum-li { display:flex; align-items:baseline; gap:2mm; font-size:9.5pt; padding:1.2mm 0; }
+.sum-n { color:var(--verde); font-weight:bold; min-width:7mm; }
+.sum-st { color:#6F7E63; font-size:8pt; }
+.sum-pts { flex:1; border-bottom:1px dotted #9DB98C; }
+.sum-li .pag { min-width:8mm; text-align:right; font-weight:bold; color:var(--verde-escuro); }
+.cat-conteudo { break-before:page; }
+.cat-bloco { break-inside:avoid; margin:0 0 6mm; }
+.cat-bloco h3 { background:var(--verde); color:#fff; font-size:10.5pt; padding:2mm 3mm;
+  margin:0; border-radius:1.5mm 1.5mm 0 0; break-after:avoid; display:flex; gap:3mm; align-items:center; }
+.cat-bloco h3 .num { background:rgba(255,255,255,.22); border-radius:2mm; padding:0 2mm; }
+.cat-bloco h3 .st { margin-left:auto; font-weight:normal; font-size:8.5pt; opacity:.95; }
+.cat-bloco .img { text-align:center; border:.5pt solid #C5D6B8; border-top:none; padding:2mm; }
+.cat-bloco .img img { max-height:85mm; max-width:100%; }
+.cat-legenda { break-inside:avoid; margin:0 0 6mm; text-align:center; }
+.cat-legenda img { max-height:200mm; max-width:80%; border:.5pt solid #C5D6B8; }
+
+/* compactação extra da requisição (ajuda a caber em uma única folha) */
+.requisicao .req-meta { margin-bottom:3mm; }
+.requisicao .req-obs { margin-top:3mm; }
+.requisicao .req-obs .linha { height:5.5mm; }
+.requisicao .req-assin { margin-top:3.5mm; }
+.requisicao .req-assin .campos { padding:6mm 8mm 3mm; }
+.requisicao .req-assin .campo .linha-ass { height:8mm; }
+
+@media print {
+  @page { size:A4; margin:13mm 11mm; }
+  body.imprimindo > *:not(#relatorio) { display:none !important; }
+  body.imprimindo #relatorio { display:block; }
+  body.imprimindo #relatorio.requisicao {
+    width:calc(100% / var(--req-zoom,1));
+    height:718px; overflow:hidden;            /* trava o layout em uma única página */
+    transform:scale(var(--req-zoom,1));
+    transform-origin:top left;
+  }
 }
 </style>
+<style id="pg"></style>
 </head>
 <body>
 <div class="topo" id="topo">
@@ -423,13 +496,15 @@ footer { text-align:center; color:#9AA68F; font-size:.78rem; padding:24px 0 36px
 
 <div id="pdf-opcoes" class="veu">
   <div class="caixa">
-    <h3>Gerar PDF das peças filtradas</h3>
+    <h3>Gerar PDF</h3>
+    <label><input type="radio" name="tipo-pdf" value="rel" checked> Relatório das peças filtradas</label>
+    <label><input type="radio" name="tipo-pdf" value="cat"> Catálogo completo (capa + sumário + todos os sistemas)</label>
     <p id="pdf-resumo"></p>
     <label><input type="checkbox" id="chk-img" checked> Incluir diagramas dos sistemas</label>
     <p style="color:#6F7E63;font-size:.82rem">Na janela de impressão, escolha o destino <b>“Salvar como PDF”</b>.</p>
     <div class="acoes">
       <button onclick="fechaPdfOpcoes()">Cancelar</button>
-      <button class="ok" onclick="gerarPDF()">Gerar</button>
+      <button class="ok" onclick="gerarDocumento()">Gerar</button>
     </div>
   </div>
 </div>
@@ -674,17 +749,126 @@ function capa(titulo, docnum){
   '</div><div class="rel-fio"></div>';
 }
 function thsRelatorio(){ return '<th style="width:7%">Ø</th>'+COLS.map(c=>'<th>'+esc(c)+'</th>').join(''); }
+function tipoPdf(){ return document.querySelector('input[name="tipo-pdf"]:checked').value; }
+function atualizaResumoPdf(){
+  document.getElementById('pdf-resumo').textContent = tipoPdf()==='cat'
+    ? 'Catálogo completo — todos os '+cards.length+' sistemas e todas as mangueiras (ignora os filtros atuais).'
+    : 'Seleção atual — '+contador.textContent+' ('+descricaoFiltro()+').';
+}
 function abrePdfOpcoes(){
-  document.getElementById('pdf-resumo').textContent='Seleção atual — '+contador.textContent+' ('+descricaoFiltro()+').';
+  atualizaResumoPdf();
   document.getElementById('pdf-opcoes').classList.add('aberto');
 }
-function fechaPdfOpcoes(){ document.getElementById('pdf-opcoes').classList.remove('aberto'); }
-function imprime(html){
-  const rel=document.getElementById('relatorio'); rel.innerHTML=html;
+document.querySelectorAll('input[name="tipo-pdf"]').forEach(r=>r.addEventListener('change',atualizaResumoPdf));
+function gerarDocumento(){ tipoPdf()==='cat' ? gerarCatalogo() : gerarPDF(); }
+
+function gerarCatalogo(){
+  const incluirImg=document.getElementById('chk-img').checked;
+  const ag=new Date();
+  const dots=[...document.querySelectorAll('#painel-filtros .chip[data-g="d"]')]
+              .map(c=>'<span style="display:inline-flex;gap:1.5mm;align-items:center">'+c.innerHTML+'</span>').join('');
+  let h='<div class="cat-capa">'+
+    '<div class="logos">'+(logoCedro?'<img src="'+logoCedro+'">':'')+
+      (logoGrupo?'<img class="dir" src="'+logoGrupo+'">':'')+'</div>'+
+    '<div class="miolo"><div class="rotulo">USINA CEDRO · PEDRA AGROINDUSTRIAL</div>'+
+    '<h1>Catálogo de Mangueiras</h1><h2>Colhedora John Deere CH570</h2>'+
+    '<div class="fio"></div>'+
+    '<div class="info">'+cards.length+' sistemas · '+document.querySelectorAll('tbody tr').length+
+    ' mangueiras · edição de '+ag.toLocaleDateString('pt-BR')+'</div></div>'+
+    '<div class="dots">'+dots+'</div>'+
+    '<div class="rodape-capa">'+RODAPE_INST+' · gerado a partir do catálogo digital Copecar</div>'+
+  '</div>';
+  h+='<div class="cat-sumario"><h2>Sumário</h2>';
+  cards.forEach((card,i)=>{
+    h+='<div class="sum-li"><span class="sum-n">'+(i+1)+'</span><span>'+esc(card.dataset.nome)+
+       '</span><span class="sum-st">'+esc(card.id)+'</span><span class="sum-pts"></span>'+
+       '<span class="pag" data-i="'+i+'">—</span></div>';
+  });
+  h+='</div><div class="cat-conteudo">';
+  if (incluirImg && legendaSrc)
+    h+='<div class="cat-legenda" id="cat-leg"><img src="'+legendaSrc+'"></div>';
+  cards.forEach((card,i)=>{
+    h+='<div class="cat-bloco" data-i="'+i+'"><h3><span class="num">'+(i+1)+'</span>'+
+       esc(card.dataset.nome)+'<span class="st">'+esc(card.id)+'</span></h3>';
+    if (incluirImg){
+      const img=card.querySelector('img.diagrama');
+      if (img) h+='<div class="img"><img src="'+img.src+'"></div>';
+    }
+    h+='<table><thead><tr>'+thsRelatorio()+'</tr></thead><tbody>';
+    card.querySelectorAll('tbody tr').forEach(tr=>{
+      h+='<tr><td>'+tr.children[1].innerHTML+'</td>';
+      COLS.forEach((c,k)=>{ const sp=tr.children[k+2]?tr.children[k+2].querySelector('.v'):null;
+        h+='<td>'+esc(sp?sp.dataset.o:'')+'</td>'; });
+      h+='</tr>';
+    });
+    h+='</tbody></table></div>';
+  });
+  h+='<div class="rel-rodape">'+RODAPE_INST+' · Catálogo CH570</div></div>';
+
+  /* simulação de paginação para preencher o sumário com páginas reais */
+  const rel=document.getElementById('relatorio');
+  rel.innerHTML=h;
+  rel.style.cssText='display:block;position:absolute;left:-9999px;top:0;width:711px;'; /* A4 retrato útil */
+  const PAGEH=1023, GAP=23;            /* 271mm úteis · 6mm de respiro entre blocos */
+  let pg=2, cur=0;                     /* capa = página 1; sumário inicia na 2 */
+  rel.querySelectorAll('.sum-li').forEach(li=>{
+    const ih=li.offsetHeight;
+    if (cur+ih>PAGEH){ pg++; cur=0; }
+    cur+=ih;
+  });
+  pg++; cur=0;                         /* conteúdo abre em página nova */
+  const leg=rel.querySelector('#cat-leg');
+  if (leg){ const ih=leg.offsetHeight;
+    if (ih<=PAGEH && cur+ih>PAGEH){ pg++; cur=0; }
+    cur+=Math.min(ih,PAGEH)+GAP; if (ih>PAGEH){ pg+=Math.floor(ih/PAGEH); cur=ih%PAGEH+GAP; } }
+  const paginas={};
+  rel.querySelectorAll('.cat-bloco').forEach(bl=>{
+    const ih=bl.offsetHeight;
+    if (ih<=PAGEH){
+      if (cur+ih>PAGEH){ pg++; cur=0; }
+      paginas[bl.dataset.i]=pg; cur+=ih+GAP;
+    } else {                           /* bloco maior que a página: começa em página nova e flui */
+      if (cur>0){ pg++; cur=0; }
+      paginas[bl.dataset.i]=pg;
+      pg+=Math.floor(ih/PAGEH); cur=(ih%PAGEH)+GAP;
+    }
+  });
+  rel.querySelectorAll('.sum-li .pag').forEach(sp=>{ sp.textContent=paginas[sp.dataset.i]||'—'; });
+  rel.style.cssText='';
+  rel.className='';
+  document.getElementById('pg').textContent='';
+  document.documentElement.style.setProperty('--req-zoom', 1);
+  fechaPdfOpcoes();
   document.body.classList.add('imprimindo'); window.print();
 }
-window.addEventListener('afterprint',()=>{ document.body.classList.remove('imprimindo');
-  document.getElementById('relatorio').innerHTML=''; });
+function fechaPdfOpcoes(){ document.getElementById('pdf-opcoes').classList.remove('aberto'); }
+function imprime(html, opts){
+  opts = opts || {};
+  const rel=document.getElementById('relatorio');
+  rel.innerHTML=html;
+  rel.className = opts.classe || '';
+  document.getElementById('pg').textContent =
+    opts.paisagem ? '@media print{@page{size:A4 landscape;margin:9mm 10mm;}}' : '';
+  let zoom=1;
+  if (opts.ajustarUmaFolha){
+    const LARG=1047, ALT=700;   /* área útil do A4 paisagem em px CSS (com folga) */
+    rel.style.cssText='display:block;position:absolute;left:-9999px;top:0;width:'+LARG+'px;';
+    const alturaReal=rel.scrollHeight;
+    rel.style.cssText='';
+    const z=Math.min(1, ALT/alturaReal);
+    if (z>=0.5){ zoom=z; }
+    else { rel.className=''; }   /* lista muito grande: melhor multipágina legível que microtexto */
+  }
+  document.documentElement.style.setProperty('--req-zoom', zoom);
+  document.body.classList.add('imprimindo'); window.print();
+}
+window.addEventListener('afterprint',()=>{
+  document.body.classList.remove('imprimindo');
+  const rel=document.getElementById('relatorio');
+  rel.innerHTML=''; rel.className='';
+  document.getElementById('pg').textContent='';
+  document.documentElement.style.setProperty('--req-zoom', 1);
+});
 
 function gerarPDF(){
   const incluirImg=document.getElementById('chk-img').checked;
@@ -714,7 +898,9 @@ function gerarRequisicao(){
   const ag=new Date(), p2=v=>String(v).padStart(2,'0');
   const docnum='REQ-'+ag.getFullYear()+p2(ag.getMonth()+1)+p2(ag.getDate())+'-'+p2(ag.getHours())+p2(ag.getMinutes());
   let totalQtd=0; cesta.forEach(q=>totalQtd+=q);
-  let h=capa('Requisição de Peças — Mangueiras CH570', docnum)+
+  const nIt=cesta.size;
+  const tier = nIt<=14 ? '' : (nIt<=24 ? ' req-c1' : (nIt<=36 ? ' req-c2' : ' req-c3'));
+  let h='<div class="doc-req'+tier+'">'+capa('Requisição de Peças — Mangueiras CH570', docnum)+
     '<div class="req-meta">'+
       '<div><b>Documento</b>'+docnum+'</div>'+
       '<div><b>Itens distintos</b>'+cesta.size+'</div>'+
@@ -727,7 +913,9 @@ function gerarRequisicao(){
     const d=dadosLinha(id); if(!d) continue; n++;
     h+='<tr><td>'+n+'</td><td class="qtd">'+q+'</td><td>'+d.tr.children[1].innerHTML+'</td>'+
        d.vals.map(v=>'<td>'+esc(v)+'</td>').join('')+
-       '<td style="font-size:7.5pt">'+esc(d.nome)+' ('+esc(d.st)+')</td></tr>';
+       '<td class="c-sis">'+esc(nIt>36 ? d.st :
+         (nIt>24 ? (d.nome.length>38 ? d.nome.slice(0,36)+'…' : d.nome)+' ('+d.st+')'
+                 : d.nome+' ('+d.st+')'))+'</td></tr>';
   }
   h+='</tbody></table>'+
      '<div class="req-total">Total: <b>'+cesta.size+' item(ns) · '+totalQtd+' unidade(s)</b></div>'+
@@ -736,8 +924,8 @@ function gerarRequisicao(){
        '<div class="campo"><div class="linha-ass"></div><b>Solicitante</b><br><span>Nome legível / Data</span></div>'+
        '<div class="campo"><div class="linha-ass"></div><b>Autorizado por</b><br><span>Nome legível / Data</span></div>'+
      '</div></div>'+
-     '<div class="rel-rodape">'+RODAPE_INST+' · '+docnum+'</div>';
-  toggleCesta(); imprime(h);
+     '<div class="rel-rodape">'+RODAPE_INST+' · '+docnum+'</div></div>';
+  toggleCesta(); imprime(h, {paisagem:true, ajustarUmaFolha:true, classe:'requisicao'});
 }
 
 function exportaCSV(){
