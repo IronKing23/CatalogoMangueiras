@@ -6,10 +6,9 @@ Usina Cedro · Copecar
 Lê a aba CATÁLOGO do Excel + a pasta de diagramas e gera um catálogo HTML
 auto-contido (funciona offline) com:
 
- NAVEGAÇÃO   • cards recolhíveis (+ abrir/fechar todos) • faixa de filtros de
-               diâmetro sempre visível • link direto por sistema (#ST______)
-               • atalho "/" para buscar, Esc para fechar/limpar • botão topo
-               • layout em cartões no celular (campos rotulados, sem tabela apertada)
+ NAVEGAÇÃO   • cards recolhíveis (+ abrir/fechar todos) • link direto por
+               sistema (#ST______) • atalho "/" para buscar, Esc para limpar
+               • botão topo • no celular: tabela em linhas com rolagem lateral
  FUNÇÕES     • lista de requisição (carrinho) com quantidades, PDF de
                requisição e exportação CSV • "onde essa peça é usada" ao
                clicar no OEM • ordenação clicando nos cabeçalhos • copiar OEM
@@ -176,11 +175,7 @@ body { margin:0; font-family:Calibri,'Segoe UI',Arial,sans-serif;
 #limpar-chips { font-size:.76rem; text-decoration:underline; background:none; border:none;
                 color:#fff; cursor:pointer; }
 
-/* ===== Faixa de diâmetros (filtro rápido sempre à mão) ===== */
-.faixa-diam { display:flex; gap:6px; align-items:center; margin-top:9px;
-              overflow-x:auto; padding-bottom:3px; scrollbar-width:thin; }
-.faixa-diam b { font-size:.78rem; opacity:.95; flex:0 0 auto; }
-.faixa-diam .chip { flex:0 0 auto; }
+/* ===== Estado vazio ===== */
 #vazio { display:none; text-align:center; color:#6F7E63; padding:64px 12px; }
 #vazio p { font-size:1.05rem; margin-bottom:14px; }
 #vazio button { padding:9px 20px; border-radius:6px; border:1px solid var(--verde);
@@ -294,17 +289,11 @@ footer { text-align:center; color:#9AA68F; font-size:.78rem; padding:24px 0 36px
   .controles button { padding:6px 9px; font-size:.78rem; }
   #contador { flex-basis:100%; }
   .card-cab h2 { font-size:.9rem; }
-  .card-corpo { padding:10px 8px; }
   .bloco-img img { max-height:220px; }
-  .card-corpo thead { display:none; }
-  .card-corpo table, .card-corpo tbody, .card-corpo tr, .card-corpo td { display:block; width:100%; }
-  .card-corpo tbody tr { border:1px solid #DCE7D0; border-radius:8px; margin:8px 0; padding:6px 8px;
-             background:#fff !important; box-shadow:0 1px 2px rgba(62,95,51,.08); }
-  .card-corpo td { border:none; text-align:left; padding:2px 4px; display:flex; gap:8px; align-items:baseline; }
-  .card-corpo td::before { content:attr(data-l); font-weight:bold; color:var(--verde-escuro);
-               min-width:96px; font-size:.72rem; flex:0 0 auto; }
-  .card-corpo td.c-sel, .card-corpo td.c-dia { display:inline-flex; width:auto; padding:2px 8px 4px 4px; }
-  .card-corpo td.c-sel::before, .card-corpo td.c-dia::before { content:none; }
+  /* tabela em linhas, com rolagem lateral suave; cabeçalho, seleção e ordenação visíveis */
+  .card-corpo { padding:10px 8px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .card-corpo table { min-width:720px; }
+  .card-corpo th { position:static; }
 }
 
 /* ===== Impressão (relatório / requisição) ===== */
@@ -388,8 +377,8 @@ footer { text-align:center; color:#9AA68F; font-size:.78rem; padding:24px 0 36px
     <button onclick="abreTodos(true)" title="Expandir todos os sistemas">▾ todos</button>
     <button onclick="abreTodos(false)" title="Recolher todos os sistemas">▸ todos</button>
   </div>
-  <div class="faixa-diam"><b>Ø</b>__CHIPS_D__</div>
   <div id="painel-filtros">
+    <div class="grupo"><b>Diâmetro</b>__CHIPS_D__</div>
     <div class="grupo"><b>Família</b>__CHIPS_F__</div>
     <div class="grupo"><b>Proteção</b>__CHIPS_P__ <button id="limpar-chips" onclick="limpaChips()">limpar filtros</button></div>
   </div>
@@ -878,13 +867,12 @@ def gera_html(ordem, sistemas, colunas, dir_img):
                    f'aria-label="Selecionar"></td><td class="c-dia">{pontos}{dnum}</td>')
             for c in colunas:
                 v = html.escape(r.get(c, ""))
-                rotulo = html.escape(ABREVIACOES.get(c, c))
                 if c == "OEM":
-                    tds += (f'<td class="c-oem" data-l="{rotulo}"><span class="v" data-o="{v}" '
+                    tds += (f'<td class="c-oem"><span class="v" data-o="{v}" '
                             f'title="Ver onde esta peça é usada">{v}</span>'
                             f'<button class="ic-copia" data-o="{v}" title="Copiar OEM">⧉</button></td>')
                 else:
-                    tds += f'<td data-l="{rotulo}"><span class="v" data-o="{v}">{v}</span></td>'
+                    tds += f'<td><span class="v" data-o="{v}">{v}</span></td>'
             trs.append(f'<tr data-id="r{rid}" data-busca="{html.escape(busca_txt)}" '
                        f'data-diam="{" ".join(str(d) for d in sorted(diams))}" '
                        f'data-fam="{html.escape("|".join(sorted(fams)))}" '
