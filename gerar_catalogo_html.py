@@ -211,10 +211,13 @@ body { margin:0; font-family:'Inter',Calibri,'Segoe UI',Arial,sans-serif;
 
 /* ===== Barra superior em vidro ===== */
 .topo { position:sticky; top:0; z-index:60; color:var(--texto);
-        padding:12px 18px 10px; background:var(--vidro);
-        -webkit-backdrop-filter:blur(14px) saturate(1.5);
-        backdrop-filter:blur(14px) saturate(1.5);
+        padding:12px 18px 10px; background:var(--fundo);
         border-bottom:1px solid var(--borda); transition:padding .2s; }
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  .topo { background:var(--vidro);
+          -webkit-backdrop-filter:blur(14px) saturate(1.5);
+          backdrop-filter:blur(14px) saturate(1.5); }
+}
 .topo::before { content:''; position:absolute; top:0; left:0; right:0; height:4px;
   background:linear-gradient(90deg,var(--verde-escuro),var(--verde) 45%,var(--verde-suave) 75%,var(--palha)); }
 .topo.compacto { padding:7px 18px 7px; }
@@ -397,9 +400,13 @@ tr:hover .ic-copia { opacity:1; }
 #barra-m { display:none; }
 @media screen and (max-width:760px) {
   #barra-m { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:75;
-    background:var(--vidro); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-    border-top:1px solid var(--borda);
+    background:var(--fundo);                  /* sólido: o conteúdo nunca vaza por trás da barra */
+    border-top:1px solid var(--borda); box-shadow:0 -2px 12px rgba(38,50,31,.12);
     padding:6px 8px calc(6px + env(safe-area-inset-bottom)); }
+  @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+    #barra-m { background:var(--vidro); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); }
+  }
+  body.kb #barra-m { display:none; }          /* esconde a barra enquanto o teclado está aberto */
   .mb { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
         background:none; border:none; color:var(--texto-2); font-size:.62rem;
         font-family:inherit; padding:4px 0; border-radius:10px; position:relative; }
@@ -601,11 +608,12 @@ a.sum-li, .sum-li { display:flex; align-items:baseline; gap:2mm; font-size:9pt;
   body.imprimindo > *:not(#relatorio) { display:none !important; }
   body.imprimindo #relatorio { display:block; }
   body.imprimindo #relatorio.requisicao {
-    width:calc(100% / var(--req-zoom,1));
+    width:calc(1047px / var(--req-zoom,1));   /* largura física do A4 paisagem — fixa em todo aparelho */
     height:718px; overflow:hidden;
     transform:scale(var(--req-zoom,1));
     transform-origin:top left;
   }
+  body.imprimindo #relatorio.catalogo { width:711px; margin:0 auto; }  /* largura física do A4 retrato */
 }
 </style>
 <style id="pg"></style>
@@ -1241,7 +1249,7 @@ function gerarCatalogo(){
   });
   rel.querySelectorAll('.sum-li .pag').forEach(sp=>{ sp.textContent=mapa[sp.dataset.i]||'—'; });
   rel.style.cssText='';
-  rel.className='';
+  rel.className='catalogo';   /* mantém a largura física de 711px no PDF — essencial no celular */
   document.getElementById('pg').textContent='';
   document.documentElement.style.setProperty('--req-zoom', 1);
   fechaPdfOpcoes();
@@ -1308,6 +1316,22 @@ try{ const j=localStorage.getItem('cedro_cesta');
     if (tr){ cesta.set(id,q); tr.querySelector('.sel').checked=true; } }
 }catch(e){}
 badge(); setTopoH(); aplica();
+
+/* ---------- barra inferior do celular: espaçamento exato + ocultar com teclado ---------- */
+function ajustaBarraM(){
+  const b=document.getElementById('barra-m');
+  if (b && getComputedStyle(b).display!=='none'){
+    document.body.style.paddingBottom=(b.offsetHeight+8)+'px';
+  } else {
+    document.body.style.paddingBottom='';
+  }
+}
+window.addEventListener('resize', ajustaBarraM);
+window.addEventListener('orientationchange', ()=>setTimeout(ajustaBarraM,250));
+busca.addEventListener('focus', ()=>document.body.classList.add('kb'));
+busca.addEventListener('blur', ()=>{ document.body.classList.remove('kb'); setTimeout(ajustaBarraM,60); });
+ajustaBarraM();
+
 if (location.hash.length>1) setTimeout(()=>irPara(location.hash.slice(1)),150);
 </script>
 </body>
