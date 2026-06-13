@@ -606,7 +606,7 @@ a.sum-li, .sum-li { display:flex; align-items:baseline; gap:2mm; font-size:9pt;
 @media print {
   @page { size:A4; margin:13mm 11mm; }
   body.imprimindo > *:not(#relatorio) { display:none !important; }
-  body.imprimindo #relatorio { display:block; }
+  body.imprimindo #relatorio { display:block; width:711px; margin:0 auto; }
   body.imprimindo #relatorio.requisicao {
     width:calc(1047px / var(--req-zoom,1));   /* largura física do A4 paisagem — fixa em todo aparelho */
     height:718px; overflow:hidden;
@@ -670,6 +670,7 @@ a.sum-li, .sum-li { display:flex; align-items:baseline; gap:2mm; font-size:9pt;
       <button onclick="abreTodos(false)"><svg class="ic"><use href="#i-cima2"/></svg>Fechar todos</button>
       <button onclick="limpa()"><svg class="ic"><use href="#i-x"/></svg>Limpar tudo</button>
       <button onclick="alternaTema()"><svg class="ic"><use href="#i-lua"/></svg>Tema</button>
+      <button onclick="togglePainel(false)"><svg class="ic"><use href="#i-x"/></svg>Fechar filtros</button>
     </div>
   </div>
 </div>
@@ -684,7 +685,7 @@ a.sum-li, .sum-li { display:flex; align-items:baseline; gap:2mm; font-size:9pt;
 
 <nav id="barra-m">
   <button class="mb" onclick="focaBusca()"><svg class="ic"><use href="#i-lupa"/></svg>Buscar</button>
-  <button class="mb" onclick="togglePainel(true)"><svg class="ic"><use href="#i-filtro"/></svg>Filtros</button>
+  <button class="mb" onclick="togglePainel()"><svg class="ic"><use href="#i-filtro"/></svg>Filtros</button>
   <button class="mb" onclick="abrePdfOpcoes()"><svg class="ic"><use href="#i-print"/></svg>PDF</button>
   <button class="mb" onclick="toggleCesta()"><svg class="ic"><use href="#i-cesta"/></svg>Carrinho<span class="badge-m" id="badge-m">0</span></button>
 </nav>
@@ -796,11 +797,13 @@ cards.forEach(c=>{
 
 /* ---------- filtros ---------- */
 function chipsAtivos(g){ return [...document.querySelectorAll('.chip.on[data-g="'+g+'"]')].map(c=>c.dataset.v); }
-function togglePainel(abrir){ const p=document.getElementById('painel-filtros');
-  const novo = abrir===true ? 'block' : (p.style.display==='block' ? 'none':'block');
-  p.style.display = novo;
-  if (abrir===true) window.scrollTo({top:0,behavior:'smooth'});
-  setTopoH(); }
+function togglePainel(forcar){
+  const p=document.getElementById('painel-filtros');
+  const abrir = forcar===true ? true : (forcar===false ? false : p.style.display!=='block');
+  p.style.display = abrir ? 'block' : 'none';
+  if (abrir) window.scrollTo({top:0,behavior:'smooth'});
+  setTopoH();
+}
 function limpaChips(){ document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on')); aplica(); }
 document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{ c.classList.toggle('on'); aplica(); }));
 function focaBusca(){ window.scrollTo({top:0,behavior:'smooth'}); setTimeout(()=>busca.focus(),250); }
